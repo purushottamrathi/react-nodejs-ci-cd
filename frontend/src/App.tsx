@@ -14,7 +14,9 @@ function App() {
 
   useEffect(() => {
     fetchMessage()
-      .then(res => setData(res.data))
+      .then((res: { data: MessageResponse }) => {
+        setData(res.data);
+      })
       .catch(() => setError("Backend unreachable"));
   }, []);
 

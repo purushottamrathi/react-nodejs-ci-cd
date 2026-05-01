@@ -5,5 +5,6 @@ export interface MessageResponse {
     timestamp: string;
 }
 
-export const fetchMessage = () =>
-    apiClient.get<MessageResponse>("/api/message");
+export const fetchMessage = () => {
+  return apiClient.get<MessageResponse>("/api/message");
+};
