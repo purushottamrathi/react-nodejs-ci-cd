@@ -22,7 +22,7 @@ app.get("/api/health", (req, res) => {
  */
 app.get("/api/message", (req, res) => {
     res.json({
-        message: "Frontend and Backend are CONNECTED",
+        message: "Frontend and Backend are CONNECTED finally",
         timestamp: new Date().toISOString()
     });
 });
