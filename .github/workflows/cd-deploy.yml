@@ -2,31 +2,28 @@ name: CD - Production Deployment
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
-    name: Deploy to Production
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
 
-      - name: Frontend build (sanity check)
+      - name: Build frontend
         working-directory: frontend
         run: |
           npm ci
           npm run build
 
-      - name: Trigger platform deployments
+      - name: Deployment info
         run: |
-          echo "Merge to main detected"
-          echo "Vercel auto-deploying frontend"
-          echo "Render auto-deploying backend"
+          echo "✅ Triggering Vercel and Render deployments"
