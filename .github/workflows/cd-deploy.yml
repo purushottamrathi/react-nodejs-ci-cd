@@ -2,16 +2,31 @@ name: CD - Production Deployment
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Build completed"
-
   deploy:
-    needs: build    # dependency
+    name: Deploy to Production
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "Deploying to production"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Frontend build (sanity check)
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Trigger platform deployments
+        run: |
+          echo "Merge to main detected"
+          echo "Vercel auto-deploying frontend"
+          echo "Render auto-deploying backend"

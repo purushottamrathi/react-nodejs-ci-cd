@@ -2,42 +2,36 @@ name: CI - PR Validation
 
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
-  backend-install:
-    name: Backend Dependencies
+  ci:
+    name: Build & Type Check
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install backend
+          cache: npm
+
+      - name: Install backend dependencies
         working-directory: backend
         run: npm ci
 
-  frontend-install:
-    name: Frontend Dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install frontend
+      - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
 
-  frontend-build:
-    name: Frontend Build (TS)
-    needs: frontend-install   # ✅ dependency
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Build React app
+      - name: TypeScript check & frontend build
         working-directory: frontend
         run: npm run build
