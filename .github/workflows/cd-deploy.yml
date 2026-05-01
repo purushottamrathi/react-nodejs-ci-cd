@@ -1,0 +1,36 @@
+name: CD - Production Deployment
+
+on:
+  push:
+    branches:
+      - main    # ONLY main triggers deployment
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # OPTIONAL: sanity build before deploy
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Deployment note
+        run: |
+          echo "Deployment triggered by merge to main"
+          echo "Frontend → Vercel auto-deploy"
+          echo "Backend → Render auto-deploy"

@@ -1,0 +1,42 @@
+name: CI - PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main    # PR must target main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  validate:
+    name: Validate Build & Types
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js 22
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # 3. Install backend dependencies
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      # 4. Install frontend dependencies
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # 5. Build frontend (TypeScript + Vite)
+      - name: Build frontend (TS check)
+        working-directory: frontend
+        run: npm run build
