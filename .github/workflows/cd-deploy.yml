@@ -1,29 +1,118 @@
+# ============================================================
+# Workflow Name
+#
+# Continuous Deployment workflow triggered after code is
+# merged into the main branch.
+#
+# This workflow does NOT directly deploy infrastructure.
+# Instead, it triggers platform-managed deployments:
+# - Frontend: Vercel
+# - Backend: Render
+#
+# It also creates a release tag for traceability.
+# ============================================================
 name: CD - Production Deployment
 
+# ------------------------------------------------------------
+# Trigger Configuration
+#
+# Runs only on push to main, typically after PR merge.
+# ------------------------------------------------------------
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
+# ------------------------------------------------------------
+# Required permissions
+#
+# contents: write is required to create tags and releases.
+# ------------------------------------------------------------
+permissions:
+  contents: write
+
+# ------------------------------------------------------------
+# Jobs Section
+# ------------------------------------------------------------
 jobs:
+
+  # ==========================================================
+  # Job: deploy
+  #
+  # Responsibilities:
+  # - Validate frontend build
+  # - Create a release tag
+  # - Trigger platform-managed deployments
+  # ==========================================================
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      # ------------------------------------------------------
+      # Step 1: Checkout repository code
+      # ------------------------------------------------------
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------
+      # Step 2: Set up Node.js runtime
+      # ------------------------------------------------------
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: |
-            frontend/package-lock.json
 
+      # ------------------------------------------------------
+      # Step 3: Build frontend
+      #
+      # Acts as a final safety check before deployment.
+      # ------------------------------------------------------
       - name: Build frontend
         working-directory: frontend
         run: |
           npm ci
           npm run build
 
-      - name: Deployment info
+      # ------------------------------------------------------
+      # Step 4: Generate release tag
+      #
+      # Tag format:
+      # vYYYY.MM.DD-<short commit sha>
+      # ------------------------------------------------------
+      - name: Generate release tag
+        id: release_tag
         run: |
-          echo "✅ Triggering Vercel and Render deployments"
+          DATE=$(date +'%Y.%m.%d')
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          TAG="v${DATE}-${SHORT_SHA}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+      # ------------------------------------------------------
+      # Step 5: Create GitHub release
+      #
+      # This provides traceability between code and deployment.
+      # ------------------------------------------------------
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: Release ${{ steps.release_tag.outputs.tag }}
+          body: |
+            Production release created from main branch.
+            Commit: ${{ github.sha }}
+            Frontend deployed via Vercel.
+            Backend deployed via Render.
+
+      # ------------------------------------------------------
+      # Step 6: Deployment trigger notification (documentation)
+      #
+      # Actual deployment is handled by Vercel and Render.
+      # ------------------------------------------------------
+      - name: Deployment trigger confirmation
+        run: |
+          echo "Production deployment triggered"
+          echo "Release tag created: ${{ steps.release_tag.outputs.tag }}"
+          echo "Frontend deployment handled by Vercel"
+          echo "Backend deployment handled by Render"

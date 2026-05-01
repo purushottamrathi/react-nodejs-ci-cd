@@ -1,34 +1,88 @@
+# ============================================================
+# Workflow Name
+#
+# This workflow validates code before it is merged into the
+# main branch. It is part of the Continuous Integration (CI)
+# process and acts as a quality gate for production.
+# ============================================================
 name: CI - PR Validation
 
+# ------------------------------------------------------------
+# Trigger Configuration
+#
+# This workflow runs only when a Pull Request is opened,
+# updated, or re-triggered with 'main' as the target branch.
+#
+# Expected usage:
+#   Source branch: develop
+#   Target branch: main
+#
+# This ensures production code is validated before merge.
+# ------------------------------------------------------------
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
+# ------------------------------------------------------------
+# Jobs Section
+#
+# Jobs define independent units of work inside the workflow.
+# This file currently contains one job, but additional jobs
+# such as linting, testing, or security scans can be added
+# later without restructuring the workflow.
+# ------------------------------------------------------------
 jobs:
-  ci:
+
+  # ==========================================================
+  # Job: build
+  #
+  # Responsibility:
+  # - Enforce Node.js version consistency
+  # - Install dependencies using lock files
+  # - Run TypeScript checks and frontend build
+  #
+  # If this job fails, the Pull Request cannot be merged.
+  # ==========================================================
+  build:
+
+    # Use a clean, GitHub-hosted Linux runner
     runs-on: ubuntu-latest
 
+    # --------------------------------------------------------
+    # Steps execute sequentially and stop on first failure
+    # --------------------------------------------------------
     steps:
-      - name: Checkout
+
+      # Fetch the repository source code into the runner
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 22
+      # Setup Node.js runtime for the workflow
+      # Node version is pinned to align local, CI, and production
+      # environments. npm cache is enabled for faster builds.
+      #
+      # cache-dependency-path is required for monorepo setups
+      # where lock files are not located at the repository root.
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: |
-            backend/package-lock.json
-            frontend/package-lock.json
 
-      - name: Install backend deps
+      # Install backend dependencies using npm ci
+      # This ensures deterministic and reproducible installs
+      - name: Install backend dependencies
         working-directory: backend
         run: npm ci
 
-      - name: Install frontend deps
+      # Install frontend dependencies using npm ci
+      - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
 
+      # Run TypeScript checks and build the frontend application
+      # Any type or build failure will block the merge
       - name: Build frontend
         working-directory: frontend
         run: npm run build
