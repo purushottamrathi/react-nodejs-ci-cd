@@ -23,6 +23,11 @@ on:
     branches:
       - main
 
+  workflow_run:
+    workflows: ["CI - PR Validation"]
+    types:
+      - completed
+
 # ------------------------------------------------------------
 # Required permissions
 #
