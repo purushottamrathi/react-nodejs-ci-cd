@@ -44,11 +44,6 @@ app.use(session({
     secret: process.env.SecretKey,
     resave: false,
     saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax"
-    }
 }));
 
 /**
