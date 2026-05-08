@@ -1,0 +1,23 @@
+@use "@/styles/variables";
+@use "@/styles/mixins";
+
+.errorPage {
+	@include mixins.page-shell;
+	@include mixins.flex-center;
+	flex-direction: column;
+	gap: 1rem;
+	text-align: center;
+
+	h1 {
+		color: variables.$heading-color;
+		font-size: clamp(2rem, 4vw, 3.5rem);
+		font-weight: 800;
+	}
+
+	p {
+		max-width: 560px;
+		color: variables.$text-muted-color;
+		font-size: 1rem;
+		line-height: 1.7;
+	}
+}
