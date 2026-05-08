@@ -91,7 +91,7 @@ passport.serializeUser((user, done) => {
 });
 
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser((user, done) => {
     done(null, user);
 });
 
