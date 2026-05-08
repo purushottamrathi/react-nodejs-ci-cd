@@ -1,0 +1,27 @@
+$primary-color: #4f46e5;
+$primary-color-dark: #4338ca;
+$secondary-color: #0ea5e9;
+$accent-color: #7c3aed;
+
+$text-color: #111827;
+$text-muted-color: #64748b;
+$heading-color: #0f172a;
+$surface-color: #ffffff;
+$surface-muted-color: #f8fafc;
+$border-color: #dbe3f0;
+
+$page-background:
+	radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 30%),
+	radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.18), transparent 28%),
+	linear-gradient(135deg, #f8fafc 0%, #eef2ff 45%, #e0f2fe 100%);
+
+$shadow-sm: 0 10px 24px rgba(15, 23, 42, 0.08);
+$shadow-md: 0 14px 30px rgba(79, 70, 229, 0.18);
+$shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.14);
+
+$border-radius-sm: 8px;
+$border-radius: 14px;
+$border-radius-lg: 24px;
+
+$content-width: 1200px;
+$transition-base: 0.2s ease;

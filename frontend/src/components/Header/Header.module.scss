@@ -1,0 +1,146 @@
+@use "@/styles/variables";
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    padding: 1rem 2rem;
+    background: rgba(10, 25, 47, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(2, 12, 27, 0.25);
+
+    nav {
+        max-width: variables.$content-width;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+    }
+}
+
+.left,
+.center,
+.right {
+    display: flex;
+    align-items: center;
+}
+
+.left {
+    flex: 0 0 auto;
+}
+
+.center {
+    flex: 1;
+    justify-content: center;
+
+    h1 {
+        margin: 0;
+        font-size: clamp(1.25rem, 2vw, 1.8rem);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #ffffff;
+        text-align: center;
+    }
+}
+
+.right {
+    flex: 0 0 auto;
+}
+
+.logo {
+    width: 3rem;
+    height: 3rem;
+    padding: 0.45rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(97, 218, 251, 0.18), rgba(97, 218, 251, 0.05));
+    border: 1px solid rgba(97, 218, 251, 0.25);
+    box-shadow: 0 8px 20px rgba(97, 218, 251, 0.18);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 12px 24px rgba(97, 218, 251, 0.28);
+    }
+}
+
+.userName {
+    color: #e6f1ff;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.navLinks {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+    }
+
+    a {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.7rem 1.1rem;
+        border-radius: 999px;
+        color: #e6f1ff;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all variables.$transition-base;
+
+        &:hover {
+            color: #61dafb;
+            background: rgba(97, 218, 251, 0.1);
+        }
+
+        &:global(.active) {
+            color: #0a192f;
+            background: linear-gradient(135deg, #61dafb, #8be9fd);
+            box-shadow: variables.$shadow-sm;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+
+        nav {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+
+    .center {
+        order: -1;
+    }
+
+    .navLinks {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .navLinks {
+        width: 100%;
+
+        li,
+        a {
+            width: 100%;
+        }
+    }
+
+    .center h1 {
+        font-size: 1.1rem;
+    }
+}
