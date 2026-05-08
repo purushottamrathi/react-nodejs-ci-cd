@@ -8,6 +8,12 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const userDb = require('./models/user.model')
 
+
+/* ===========================
+   REQUIRED FOR Render / HTTPS
+=========================== */
+app.set("trust proxy", 1);
+
 app.use(cors({
     origin: `${process.env.FrontendOrigin}`,
     methods: "GET, POST, PUT, DELETE",
@@ -44,6 +50,11 @@ app.use(session({
     secret: process.env.SecretKey,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
 }));
 
 /**
@@ -52,10 +63,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+const callbackURL =
+  process.env.NODE_ENV === "production"
+    ? "https://react-nodejs-ci-cd.onrender.com/auth/google/callback"
+    : "http://localhost:5000/auth/google/callback";
+
 passport.use(new GoogleStrategy({
     clientID: clientID,
     clientSecret: clientSecret,
-    callbackURL: "/auth/google/callback",
+    callbackURL,
     scope: ["profile", "email"],
     passReqToCallback: true
 },
