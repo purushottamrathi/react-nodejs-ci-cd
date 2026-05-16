@@ -92,7 +92,7 @@ jobs:
       # TypeScript check 
       - name: Type check backend
         working-directory: backend
-        run: npx tsc --noEmit
+        run: npx tsc --noEmit #Check code, but DO NOT generate files
 
         
       # Run TypeScript checks and build the backend application
