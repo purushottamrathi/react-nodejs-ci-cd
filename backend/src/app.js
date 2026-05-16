@@ -8,6 +8,8 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const userDb = require('./models/user.model')
 
+app.set("trust proxy", 1);
+
 app.use(cors({
     origin: `${process.env.FrontendOrigin}`,
     methods: "GET, POST, PUT, DELETE",
@@ -44,6 +46,11 @@ app.use(session({
     secret: process.env.SecretKey,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
 }));
 
 /**
