@@ -7,6 +7,10 @@
 # ============================================================
 name: CI - PR Validation
 
+# Node 24 compatibility (future-proof)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # ------------------------------------------------------------
 # Trigger Configuration
 #
@@ -67,7 +71,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 22
           cache: npm
           cache-dependency-path: |
             backend/package-lock.json
@@ -75,7 +79,6 @@ jobs:
 
 
       # Install backend dependencies using npm ci
-      # This ensures deterministic and reproducible installs
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
@@ -84,6 +87,19 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
+
+        
+      # TypeScript check 
+      - name: Type check backend
+        working-directory: backend
+        run: npx tsc --noEmit
+
+        
+      # Run TypeScript checks and build the backend application
+      # Any type or build failure will block the merge
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
 
       # Run TypeScript checks and build the frontend application
       # Any type or build failure will block the merge

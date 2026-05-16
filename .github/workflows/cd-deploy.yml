@@ -13,6 +13,10 @@
 # ============================================================
 name: CD - Production Deployment
 
+# Node 24 compatibility (future-proof)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # ------------------------------------------------------------
 # Trigger Configuration
 #
@@ -61,10 +65,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 22
           cache: npm
           cache-dependency-path: |
             frontend/package-lock.json
+            backend/package-lock.jso
 
 
       # ------------------------------------------------------
@@ -78,9 +83,19 @@ jobs:
           npm ci
           npm run build
           
+      # ------------------------------------------------------
+      # Step 4: Build backend
+      #
+      # Acts as a final safety check before deployment.
+      # ------------------------------------------------------
+      - name: Build backend
+        working-directory: backend
+        run: |
+          npm ci
+          npm run build
 
       # ------------------------------------------------------
-      # Step 4: Generate release tag
+      # Step 5: Generate release tag
       #
       # Tag format:
       # vYYYY.MM.DD-<short commit sha>
@@ -94,7 +109,7 @@ jobs:
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       # ------------------------------------------------------
-      # Step 5: Create GitHub release
+      # Step 6: Create GitHub release
       #
       # This provides traceability between code and deployment.
       # ------------------------------------------------------
@@ -110,7 +125,7 @@ jobs:
             Backend deployed via Render.
 
       # ------------------------------------------------------
-      # Step 6: Deployment trigger notification (documentation)
+      # Step 7: Deployment trigger notification (documentation)
       #
       # Actual deployment is handled by Vercel and Render.
       # ------------------------------------------------------
