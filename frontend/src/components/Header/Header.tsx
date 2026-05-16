@@ -13,23 +13,24 @@ interface User {
 const Header: React.FC = () => {
   const [userData, setUserData] = useState<User | null>(null);
 
-  const getUser = async () => {
-    try {
-      const res = await apiClient.get('/login/success');
-      setUserData(res.data.user);
-    }
-    catch (err) {
-      // 400 = not authenticated yet — expected when no Google session exists
-      setUserData(null);
-    }
-  }
-
   useEffect(() => {
-    getUser()
+    const getUser = async () => {
+      try {
+        const res = await apiClient.get('/auth/login/success');
+        setUserData(res.data.user);
+      }
+      catch (err) {
+        // 400 = not authenticated yet — expected when no Google session exists
+        setUserData(null);
+        return err
+      }
+    };
+
+    getUser();
   }, []);
 
   const handleLogout = () => {
-    window.open(`${import.meta.env.VITE_API_BASE_URL}/logout`, "_self");
+    window.open(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`, "_self");
 
   };
 
